@@ -1,0 +1,67 @@
+(* Copyright (c) 2012 The Sporting Exchange Limited*)
+
+(* All rights reserved.*)
+
+(* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:*)
+
+(* 1.	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.*)
+(* 2.	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.*)
+(* 3.	Neither the names of The Sporting Exchange Limited, Betfair Limited nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.*)
+
+(* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.*)
+
+expectation = "expectation", space, name, space, "when", space, requestMatch, space, "then", space, outcome, {space, outcome}
+
+requestMatch = uriMatch|cookieMatch|headerMatch|bodyMatch|combination
+
+uriMatch = "uri", space, valueMatch
+cookieMatch = "cookie", space, valueMatch, space, valueMatch
+headerMatch = "header", space, valueMatch, space, valueMatch
+bodyMatch = "body", space, valueMatch|fieldMatch
+
+fieldMatch = "field", space, name, space, valueMatch|fieldMatch|combination
+
+valueMatch = equals|equalToIgnoringCase|beginsWith|endsWith|contains|regex|isIn|contents|combination
+
+equals = "eq", space, quotedString
+equalToIgnoringCase = "eqI", space, quotedString
+beginsWith = "begins", space, quotedString
+endsWith = "ends", space, quotedString
+contains = "contains", space, quotedString
+regex = "regex", space, quotedString
+isIn = "in", opSpace, "(", opSpace, quotedString, opSpace, "," opSpace, quotedString, {opSpace, "," opSpace, quotedString}, opSpace, ")"
+contents = "contents", space, [delim, space], contentsMatch
+delim = "delim", space, quotedString
+
+contentsMatch = containsAll|containsAtLeast|isEmpty|combination
+containsAll = "containsAll", opSpace, "(", opSpace, valueMatch, {opSpace, "," opSpace, valueMatch}, ")"
+containsAtLeast = "containsAtLeast", opSpace, "(", opSpace, valueMatch, {opSpace, "," opSpace, valueMatch}, ")"
+isEmpty = "isEmpty"
+
+combination = and|or|not
+and = "all", opSpace, "(", opSpace, match, opSpace, "," opSpace, match, {opSpace, "," opSpace, match}, opSpace, ")"
+or  = "any", opSpace, "(", opSpace, match, opSpace, "," opSpace, match, {opSpace, "," opSpace, match}, opSpace, ")"
+not = "not", space, match
+match = requestMatch|fieldMatch|valueMatch|contentsMatch|combination
+
+outcome = respond|respondRef|repeat
+respond = "respond", [space, responseCode], {space, responseHeader|responseCookie}, [space, responseBody]
+responseCode = "code", space, number
+responseHeader = "header" space, name, space, name
+responseCookie = "cookie" space, name, space, name
+responseBody = literalBody|resourceBody
+literalBody = "body", space, ["type", space, mimeType, space], quotedString
+resourceBody = "bodyFrom", space, quotedString
+
+respondRef = "respondRef", space, name
+repeat = "repeat", opSpace, "(", opSpace, outcome, opSpace, {",", opSpace, outcome}, opSpace, ")" 
+
+number = digit, {digit}
+name = letter, {letter|digit}
+
+letter = "a"-"z"|"A"-"Z"
+digit = "0"-"9"
+space = " ", opSpace
+opSpace = {" "}
+quotedString = \", *anything*, \"
+mimeType = "text/plain", "application/json", "application/xml"

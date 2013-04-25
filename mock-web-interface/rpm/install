@@ -1,0 +1,41 @@
+# Copyright (c) 2012 The Sporting Exchange Limited
+#
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+#
+# 1.	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+# 2.	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+# 3.	Neither the names of The Sporting Exchange Limited, Betfair Limited nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+#
+# IMPORTANT: This file *MUST NOT* contain variables other than RPM spec and shell ones.
+#
+rm -rf $RPM_BUILD_ROOT
+
+
+install -d -m 755 $RPM_BUILD_ROOT/etc/sysconfig
+install -d -m 755 $RPM_BUILD_ROOT{%{confdir},%{confdir}/conf,%{logdir}}
+install -d -m 775 $RPM_BUILD_ROOT{%{tempdir},%{workdir},%{appdir}}
+
+install -p -m 664 %{mavenbasedir}/rpm/etc/bf-mock-server-interface/server.xml $RPM_BUILD_ROOT%{confdir}/server.xml
+install -p -m 664 %{mavenbasedir}/rpm/etc/bf-mock-server-interface/tomcat-users.xml $RPM_BUILD_ROOT%{confdir}/tomcat-users.xml
+install -p -m 664 %{mavenbasedir}/rpm/etc/bf-mock-server-interface/web.xml $RPM_BUILD_ROOT%{confdir}/web.xml
+install -p -m 664 %{mavenbasedir}/rpm/etc/sysconfig/bf-mock-server-interface $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/bf-mock-server-interface
+
+install -d -m 755 $RPM_BUILD_ROOT%{appdir}/webapps
+/usr/bin/unzip %{projectbuilddir}/%{projectfinalname}.war -d $RPM_BUILD_ROOT%{appdir}/webapps/ROOT
+
+pushd $RPM_BUILD_ROOT%{appdir}
+[ -d conf ] || ln -fs %{confdir} conf
+[ -d logs ] || ln -fs %{logdir} logs
+[ -d webapps ] || ln -fs %{appdir} webapps
+[ -d content ] || ln -fs %{contentdir} content
+[ -d work ] || ln -fs %{workdir} work
+[ -d temp ] || ln -fs %{tempdir} temp
+popd
+
+install -d $RPM_BUILD_ROOT/%{_initrddir}
+ln -fs %{_initrddir}/tomcat7 $RPM_BUILD_ROOT/%{_initrddir}/%{name} >/dev/null

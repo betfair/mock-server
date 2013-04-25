@@ -1,0 +1,129 @@
+<!--
+  ~ Copyright (c) 2012 The Sporting Exchange Limited
+  ~
+  ~ All rights reserved.
+  ~
+  ~ Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+  ~
+  ~ 1.	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+  ~ 2.	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+  ~ 3.	Neither the names of The Sporting Exchange Limited, Betfair Limited nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+  ~
+  ~ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  -->
+
+<xs:schema
+        xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:cx="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://www.mocking.com/mock/expectation/v1.0">
+
+    <xs:element name="expectation">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="name" type="xs:string"/>
+                <xs:element name="when" type="RequestMatch"/>
+                <xs:element name="then" type="Outcome"/>
+
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="RequestMatch">
+        <xs:choice maxOccurs="unbounded">
+            <xs:element name="uri" type="ValueMatch"/>
+            <xs:element name="header" type="NamedMatch"/>
+            <xs:element name="cookie" type="NamedMatch"/>
+            <xs:element name="body" type="BodyMatch"/>
+            <xs:element name="any" type="RequestMatch"/>
+            <xs:element name="all" type="RequestMatch"/>
+            <xs:element name="not" type="RequestMatch"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="NamedMatch">
+        <xs:sequence>
+            <xs:element name="name" type="ValueMatch"/>
+            <xs:element name="value" type="ValueMatch"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ValueMatch">
+        <xs:choice>
+            <xs:element name="eqI" type="xs:string"/>
+            <xs:element name="eq" type="xs:string"/>
+            <xs:element name="begins" type="xs:string"/>
+            <xs:element name="ends" type="xs:string"/>
+            <xs:element name="contains" type="xs:string"/>
+            <xs:element name="regex" type="xs:string"/>
+            <xs:element name="isIn" type="xs:string"/>
+            <xs:element name="any" type="ValueMatch"/>
+            <xs:element name="all" type="ValueMatch"/>
+            <xs:element name="not" type="ValueMatch"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="BodyMatch">
+        <xs:complexContent>
+            <xs:extension base="ValueMatch">
+                <xs:choice>
+                    <xs:element name="field" type="FieldMatch"/>
+                    <xs:element name="any" type="BodyMatch"/>
+                    <xs:element name="all" type="BodyMatch"/>
+                    <xs:element name="not" type="BodyMatch"/>
+                </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="FieldMatch">
+        <xs:sequence>
+            <xs:choice>
+                <xs:element name="name" type="xs:string"/>
+                <xs:element name="x-path" type="xs:string"/>
+            </xs:choice>
+            <xs:choice>
+                <xs:element name="eqI" type="xs:string"/>
+                <xs:element name="eq" type="xs:string"/>
+                <xs:element name="begins" type="xs:string"/>
+                <xs:element name="ends" type="xs:string"/>
+                <xs:element name="contains" type="xs:string"/>
+                <xs:element name="regex" type="xs:string"/>
+                <xs:element name="isIn" type="xs:string"/>
+                <xs:element name="field" type="FieldMatch"/>
+                <xs:element name="any" type="BodyMatch"/>
+                <xs:element name="all" type="BodyMatch"/>
+                <xs:element name="not" type="BodyMatch"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Outcome">
+        <xs:choice maxOccurs="unbounded">
+            <xs:element name="respond" type="Response"/>
+            <xs:element name="sequentially" type="Outcome"/>
+            <xs:element name="cyclically" type="Outcome"/>
+            <xs:element name="weighted" type="Outcome"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="Response">
+        <xs:sequence>
+            <xs:element name="code" type="xs:integer"/>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="header" type="NamedValue"/>
+                <xs:element name="cookie" type="NamedValue"/>
+            </xs:choice>
+            <xs:choice minOccurs="0">
+                <xs:element name="body" type="xs:string"/>
+                <xs:element name="bodyFrom" type="xs:anyURI"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="NamedValue">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="value" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>

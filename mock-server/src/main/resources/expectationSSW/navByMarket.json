@@ -1,0 +1,70 @@
+{"currencyCode":"GBP","nodes":[
+    {
+        "name":"Match Odds",
+        "nodeType":"SPORTSBOOK_MARKET",
+        "nodeId":"SPORTSBOOK_MARKET:924.139079",
+        "rank":1,
+        "sportsBookMarketInfo":{
+            "eventId":26601763,
+            "marketId":"924.139079",
+            "marketName":"Match Odds",
+            "eventTypeId":1,
+            "marketStatus":"OPEN",
+            "bettingType":"FIXED_ODDS",
+            "runners":[
+                {
+                    "selectionId":4679278,
+                    "handicap":0.0,
+                    "sortPriority":1,
+                    "runnerStatus":"ACTIVE",
+                    "runnerName":"TeamDstJD1"
+                },
+                {
+                    "selectionId":4679299,
+                    "handicap":0.0,
+                    "sortPriority":2,
+                    "runnerStatus":"ACTIVE",
+                    "runnerName":"TeamDstJE1"
+                },
+                {
+                    "selectionId":34,
+                    "handicap":0.0,
+                    "sortPriority":3,
+                    "runnerStatus":"ACTIVE",
+                    "runnerName":"The Draw"
+                }
+            ],
+            "marketTime":"2012-01-10T11:40:36.000Z",
+            "marketSuspendTime":"2012-01-10T11:40:36.000Z",
+            "canTurnInPlay":false,
+            "marketType":"MATCH_ODDS",
+            "numberOfWinners":1,
+            "betDelay":0,
+            "bspMarket":false,
+            "numberOfRunners":3,
+            "numberOfActiveRunners":3,
+            "inPlay":false,
+            "exchangeMarketId":"1.101423878"
+        }
+    },
+    {
+        "name":"TeamDstJD1 v TeamDstJE1",
+        "nodeType":"EVENT",
+        "nodeId":"EVENT:26601763",
+        "eventInfo":{
+            "name":"TeamDstJD1 v TeamDstJE1",
+            "countryCode":"GB",
+            "timezone":"Europe/London",
+            "eventId":26601763,
+            "eventTypeId":1,
+            "openDate":"2011-12-10T11:40:36.000Z",
+            "marketPrecedence":["1.101423878"],
+            "videoAvailable":true
+        }
+    }
+],"edges":[
+    {
+        "from":"EVENT:26601763",
+        "to":"SPORTSBOOK_MARKET:924.139079"
+    }
+]}

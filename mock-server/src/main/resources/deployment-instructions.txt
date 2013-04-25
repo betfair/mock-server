@@ -1,0 +1,76 @@
+# Copyright (c) 2012 The Sporting Exchange Limited
+#
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+#
+# 1.	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+# 2.	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+# 3.	Neither the names of The Sporting Exchange Limited, Betfair Limited nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+NOTE: To set up please check through the POM files as you will need to specify target URL for RPM creation.
+
+Set up a session
+    curl -H 'Content-Type:application/json' -d '{"commonWhen":{"any":[{"all":[{"url":{"contains":"/api/"}},{"param":{"name":{"eq":"foo"},"value":{"eq":"1234"}}}]},{"all":[{"url":{"contains":"/www/"}},{"param":{"name":{"eq":"bar"},"value":{"eq":"1234"}}}]}]}}' http://mockserverURL/sessions > resp.html
+
+look in resp.html to see the id of the session you just created
+
+
+set up an expectation in that session
+    curl -H "content-type:application/json" -d '{"when":{"url":{"endsWith":"getallnodes"}},"then":{"sequentially":[{"respond":{"code":"200","contentType": "text/html","body":"<html><body>firstCall</body></html>"}},{"respond":{"code":"200","contentType": "text/html","body":"<html><body>middleCall</body></html>"}},{"respond":{"code":"200","contentType": "text/html","body":"<html><body>lastCall</body></html>"}}]}}' http://mockserverURL/expectations?sessionId=1 > resp.html
+
+
+To deploy the mock server onto a box:
+-make sure the bf-dev-applications-nexus.repo has been added to the /etc/yum.repos.d directory
+[bf-dev-applications-nexus]
+name=bf-dev-applications-nexus
+baseurl=https://repositoryURL
+enabled=1
+gpgcheck=0
+priority=90
+
+Then to install the mock server run this command:
+    sudo yum install bf-mock-server
+
+To install the web interface, add the repo above and run:
+    sudo yum install bf-mock-server-interface
+
+You can update the mock server or web interface by running:
+    sudo yum update bf-mock-server
+    sudo yum update bf-mock-server-interface
+
+After installing or updating the mock server or web interface it is a good idea to restart it:
+    sudo /etc/init.d/bf-mock-server restart
+    sudo /etc/init.d/bf-mock-server-interface restart
+
+If there is no update available after making a change, make sure the jenkins job has finished/passed that uploads it to the nexus repository.
+This jenkins job is currently located at:
+    http://jenkinsjobURL
+
+
+
+Alternatively, you can deploy it manually by doing the following:
+
+    to deploy on <Box yoy wish to deploy to>
+    scp mock-server.war onto the box
+
+    sudo /sbin/service tomcat7 stop
+    sudo rm -r /usr/share/tomcat7/webapps/ROOT
+    sudo rm /usr/share/tomcat7/webapps/ROOT.war
+    sudo mv mock-server.war /usr/share/tomcat7/webapps/ROOT.war
+    sudo /sbin/service tomcat7 start
+
+    * Recommended JVM Settings following Performance Testing Garbage Collection Settings
+    -Xmx512m -Xms384m -Xmn192m -XX:SurvivorRatio=10 -XX:MaxTenuringThreshold=3 -XX:TargetSurvivorRatio=90
+    -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:PermSize=48m
+
+    * Other Useful JVM Settings for Monitoring
+    -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintTenuringDistribution
+    -XX:+UsePerfData -Xloggc:/var/log/tomcat7/gc.log
+    -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.ssl=false
+    -Dcom.sun.management.jmxremote.authenticate=false
+
+

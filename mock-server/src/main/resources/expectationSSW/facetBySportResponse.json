@@ -1,0 +1,10 @@
+{
+    "when": {
+        "url" : {"eq":"/api/sports/navigation/facet/v1.0/search"}
+    },
+    "then":{"respond":{
+        "code":"200",
+        "contentType": "application/json",
+        "bodyFile": "expectationSSW/facetBySport.json"
+    }}
+}

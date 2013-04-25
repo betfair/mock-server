@@ -1,0 +1,11 @@
+{
+    "when":{
+        "url":{"eq":"/api/sports/navigation/v1.0/graph/bynode"},
+        "param":{"name":{"eq":"ins"},"value":{"eq":"ROOT,EVENT_TYPE,MENU,COMPETITION,EVENT"}}
+    },
+    "then":{"respond":{
+        "code":"200",
+        "contentType": "application/json",
+        "bodyFile": "expectationSSW/navByMarket.json"
+    }}
+}

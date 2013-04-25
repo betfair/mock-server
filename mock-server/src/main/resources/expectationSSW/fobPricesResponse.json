@@ -1,0 +1,10 @@
+{
+    "when":{
+        "url" : {"eq" : "/api/sports/fixedodds/readonly/v1.0/getMarketPrices" }
+    },
+    "then":{"respond":{
+        "code":"200",
+        "contentType": "application/json",
+        "bodyFile": "expectationSSW/fobPrices.json"
+    }}
+}

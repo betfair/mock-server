@@ -1,0 +1,5 @@
+{
+    "url" : "exp2",
+    "responseBody": "<sample>xml sample</sample>",
+    "responseContentType": "application/xml"
+}

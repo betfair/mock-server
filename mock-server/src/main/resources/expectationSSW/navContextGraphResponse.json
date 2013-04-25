@@ -1,0 +1,10 @@
+{
+    "when":{
+        "url" : {"eq":"/api/sports/navigation/v1.0/graph/bynode"}
+    },
+    "then":{"respond":{
+        "code":"200",
+        "contentType": "application/json",
+        "bodyFile": "expectationSSW/navContextGraph.json"
+    }}
+}
