@@ -118,17 +118,16 @@ class Playback {
         String queryParams = ""
         if (queryMap){
             queryParams = """,
-            {"all":[
-                {"""
+            {"all":["""
             def params = """
-                "param":{
+                {"param":{
                     "name":{
                         "eq":"^key^"
                     },
                     "value":{
                         "eq":"^val^"
                     }
-                }"""
+                }}"""
             Iterator i = queryMap.keySet().iterator()
 
             while(i.hasNext()){
@@ -139,7 +138,6 @@ class Playback {
             }
 
             queryParams += """
-                }
             ]}"""
         }
         return queryParams
