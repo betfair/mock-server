@@ -40,16 +40,16 @@ class RecordedRequest extends RecordedObject{
             String url = data[2].replaceFirst("url:", "").split("\\?")[0]
             String path = data[3].replace("path:", "")
             String headers = data[4].replaceFirst("headers:", "")
-            String queryString = data[5].replaceFirst("query:", "")
+            String queryString = URLDecoder.decode(data[5].replaceFirst("query:", ""))
             String body = data[6].replaceFirst("body:", "")
 
-            this.method = RequestMethod.valueOf(method)
-            this.url = url
-            this.path = path
-            this.headers = parseHeaders(headers)
-            this.queryString = queryString
-            this.queryMap = queryStringToMap(queryString)
-            this.body = body
+            this.@method = RequestMethod.valueOf(method)
+            this.@url = url
+            this.@path = path
+            this.@headers = parseHeaders(headers)
+            this.@queryString = queryString
+            this.@queryMap = queryStringToMap(queryString)
+            this.@body = body
         }
     }
 
@@ -92,17 +92,15 @@ class RecordedRequest extends RecordedObject{
      * @param queryString
      * @return The Query Map
      */
-    private Map<String, String> queryStringToMap(String queryString){
+    private Map queryStringToMap(String queryString){
         def map = [:]
-        if (!queryString){
-            return map
-        }
-
-        queryString = queryString.replace("?", "")
-        def splitString = queryString.split("&")
-        for(pair in splitString){
-            def keyVal = pair.split("=")
-            map[keyVal[0]] = keyVal[1]
+        if (queryString){
+            queryString = queryString.replace("?", "")
+            def splitString = queryString.split("&")
+            for(pair in splitString){
+                def keyVal = pair.split("=")
+                map[keyVal[0]] = keyVal[1]
+            }
         }
         return map
     }
@@ -114,6 +112,18 @@ class RecordedRequest extends RecordedObject{
     public void setMethod(String method){
         this.method = RequestMethod.valueOf(method)
     }
+
+    /**
+     * Override the setQueryString method to also set the query map
+     *
+     * @param queryString The query string to set
+     */
+    public void setQueryString(String queryString){
+        this.@queryString = URLDecoder.decode(queryString)
+        this.@queryMap = queryStringToMap(this.@queryString)
+    }
+
+
 
 
 }
