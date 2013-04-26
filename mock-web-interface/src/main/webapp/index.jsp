@@ -1,4 +1,5 @@
 <%@ page import="java.io.*" %>
+<%@ page import="com.betfair.site.model.PropertiesReader" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="sql_rt" uri="http://java.sun.com/jstl/sql_rt" %>
 <%--
@@ -57,10 +58,14 @@
                 <th class=tableheader></th>
             </tr>
             <%
-                File path = new File("/var/lib/bf-mock-server/sessions/");
-                //File path = new File("C:/etc/mock-server/sessions/");
+
+
+
+                PropertiesReader props = new PropertiesReader();
+                File path = new File(props.getPath());
                 String canonicalPath = path.getCanonicalPath();
-                if(!canonicalPath.startsWith("/var/lib/bf-mock-server/sessions")){
+
+                if(!canonicalPath.startsWith(props.getPath())){
                     throw new IOException();
                 }
                 File folder = new File(canonicalPath);
@@ -68,15 +73,14 @@
                 for(int i=0; i<listOfUUIDs.length; i++){
                     //There might be files. Ignore these, only look at the directories
                     if(listOfUUIDs[i].isDirectory()){
-                        File uuidPath = new File("/var/lib/bf-mock-server/sessions/" + listOfUUIDs[i].getName());
-                        //File uuidPath = new File("C:/etc/mock-server/sessions/" + listOfUUIDs[i].getName());
+                        File uuidPath = new File(props.getPath() + File.separator + listOfUUIDs[i].getName());
 
                         String uuidCanonicalPath = uuidPath.getCanonicalPath();
-                        if(!uuidCanonicalPath.startsWith("/var/lib/bf-mock-server/sessions")){
+
+                        if(!uuidCanonicalPath.startsWith(props.getPath())){
                             throw new IOException();
                         }
                         File uuid = new File(uuidCanonicalPath);
-
                         File[] listOfMocks = uuid.listFiles();
                         for(int x=0; x<listOfMocks.length; x++){
                             //Looking for the file with the metadata in. This file begins with a .

@@ -14,6 +14,8 @@
 
 package com.betfair.site.servlets;
 
+import com.betfair.site.model.PropertiesReader;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -35,11 +37,10 @@ import java.util.zip.ZipOutputStream;
  */
 public class DownloadAll extends HttpServlet {
 
-
-    final private String sessionFilePath = "/var/lib/bf-mock-server/sessions/";
     final private String uuidRegex = "[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}";
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        PropertiesReader props = new PropertiesReader();
         List<String> fileList;
         fileList = new ArrayList<String>();
         String uuid = req.getParameter("uuid");
@@ -47,13 +48,12 @@ public class DownloadAll extends HttpServlet {
             throw new FileNotFoundException("Invalid path");
         }
         String path = fileList + uuid;
-        //String path = "C:/etc/mock-server/sessions/" + uuid;
-        String zipFile = sessionFilePath + "/" + uuid + ".zip";
+        String zipFile = props.getPath() + File.separator + uuid + ".zip";
 
         //If file doesnt exist, create the zip file
         File filePath = new File(zipFile);
         String canonicalPath = filePath.getCanonicalPath();
-        if(!canonicalPath.startsWith(sessionFilePath)){
+        if(!canonicalPath.startsWith(props.getPath())){
             throw new IOException();
         }
         File f = new File(canonicalPath);

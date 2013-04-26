@@ -16,6 +16,7 @@ package com.betfair.site.servlets;
 
 import com.betfair.site.model.DataRetriever;
 import com.betfair.site.model.FileData;
+import com.betfair.site.model.PropertiesReader;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -35,7 +36,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class Download extends HttpServlet {
-    final private String sessionFilePath = "/var/lib/bf-mock-server/sessions/";
+
     final private String uuidRegex = "[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}";
     final private String uuidFileRegex = "\\.[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}";
     final private String filenameRegex = "[0-9]{1,5}";
@@ -75,17 +76,18 @@ public class Download extends HttpServlet {
 
 
    private void downloadFile(String filename, String uuid, HttpServletRequest req, HttpServletResponse res) throws FileNotFoundException, IOException{
+       PropertiesReader props = new PropertiesReader();
        if(!uuid.matches(uuidRegex) || (!filename.matches(filenameRegex) || !filename.matches(uuidFileRegex))){
           throw new FileNotFoundException("Invalid Folder/File name");
        }
 
-       String path = sessionFilePath + uuid + "/" + filename;
+       String path = props.getPath() + File.separator + uuid + File.separator + filename;
         //String path = "C:/etc/mock-server/sessions/" + uuid + "/" + filename;
 
 
         File filePath = new File(path);
         String canonicalPath = filePath.getCanonicalPath();
-        if(!canonicalPath.startsWith(sessionFilePath)){
+        if(!canonicalPath.startsWith(props.getPath())){
             throw new IOException();
         }
         File file = new File(canonicalPath);

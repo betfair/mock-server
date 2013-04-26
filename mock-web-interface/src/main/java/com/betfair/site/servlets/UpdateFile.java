@@ -14,6 +14,8 @@
 
 package com.betfair.site.servlets;
 
+import com.betfair.site.model.PropertiesReader;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -39,12 +41,13 @@ import java.util.Enumeration;
  */
 public class UpdateFile extends HttpServlet {
 
-    final private String sessionFilePath = "/var/lib/bf-mock-server/sessions/";
     final private String uuidRegex = "[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}";
     final private String uuidFileRegex = "\\.[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}";
     final private String filenameRegex = "[0-9]{1,5}";
 
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
+        PropertiesReader props = new PropertiesReader();
+
         //The data to be written to the file
         String data = (String)req.getParameter("data");
         //The filename
@@ -55,7 +58,7 @@ public class UpdateFile extends HttpServlet {
         if(!uuid.matches(uuidRegex) || (!filename.matches(filenameRegex) || !filename.matches(uuidFileRegex))){
            throw new FileNotFoundException("Invalid Folder/File name");
         }
-        String path = sessionFilePath  + uuid + "/" + filename;
+        String path = props.getPath() + File.separator + uuid + File.separator + filename;
         //String path = "C:/etc/mock-server/sessions/" + uuid + "/" + filename;
 
         String creationDate = (String)req.getParameter("creationdate");
@@ -70,7 +73,7 @@ public class UpdateFile extends HttpServlet {
 
         File filePath = new File(path);
         String canonicalPath = filePath.getCanonicalPath();
-        if(!canonicalPath.startsWith(sessionFilePath)){
+        if(!canonicalPath.startsWith(props.getPath())){
             throw new IOException();
         }
         File file = new File(canonicalPath);

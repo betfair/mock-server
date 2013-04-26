@@ -16,6 +16,7 @@ package com.betfair.site.servlets;
 
 import com.betfair.site.model.DataRetriever;
 import com.betfair.site.model.FileData;
+import com.betfair.site.model.PropertiesReader;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -36,7 +37,7 @@ import java.util.Properties;
  * To change this template use File | Settings | File Templates.
  */
 public class Delete extends HttpServlet {
-    final private String filePath = "/var/lib/bf-mock-server/sessions/";
+
     final private String uuidRegex = "[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}";
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
@@ -45,15 +46,15 @@ public class Delete extends HttpServlet {
 
 
     public void deleteUUID(HttpServletRequest req, HttpServletResponse res) throws IOException{
+        PropertiesReader props = new PropertiesReader();
         String uuid = req.getParameter("uuid");
         if(!uuid.matches(uuidRegex)){
             res.sendRedirect("index.jsp");
         }
 
-        //String path = "C:/etc/mock-server/sessions/" + uuid;
-        File file = new File(filePath + uuid);
+        File file = new File(props.getPath() + File.separator + uuid);
         String canonicalPath = file.getCanonicalPath();
-        if(!canonicalPath.startsWith(filePath)){
+        if(!canonicalPath.startsWith(props.getPath())){
             throw new IOException();
         }
 

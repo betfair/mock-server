@@ -31,8 +31,12 @@ import java.util.HashMap;
  */
 public class DataRetriever {
 
-    final private String filePath = "/var/lib/bf-mock-server/sessions/";
     final private String uuidRegex = "[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}";
+    PropertiesReader props;
+
+    public DataRetriever() throws IOException{
+        props = new PropertiesReader();
+    }
     /**
      *
      * Returns the mock description, from the meta data file
@@ -44,11 +48,11 @@ public class DataRetriever {
         if(!uuid.matches(uuidRegex)){
            return "";
         }
-        File path = new File(filePath + uuid);
+        File path = new File(props.getPath() + File.separator + uuid);
 
         String canonicalPath = path.getCanonicalPath();
         File folder = new File(canonicalPath);
-        if(!canonicalPath.startsWith(filePath)){
+        if(!canonicalPath.startsWith(props.getPath())){
             throw new IOException();
         }
 
@@ -85,11 +89,11 @@ public class DataRetriever {
         if(!uuid.matches(uuidRegex)){
            return null;
         }
-        File path = new File(filePath + uuid);
+        File path = new File(props.getPath() + File.separator + uuid);
 
         String canonicalPath = path.getCanonicalPath();
         System.out.println("Canonical is : " + canonicalPath);
-        if(!canonicalPath.startsWith(filePath)){
+        if(!canonicalPath.startsWith(props.getPath())){
             throw new IOException();
         }
 

@@ -16,6 +16,7 @@ package com.betfair.site.servlets;
 
 import com.betfair.site.model.DataRetriever;
 import com.betfair.site.model.FileData;
+import com.betfair.site.model.PropertiesReader;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -38,6 +39,9 @@ public class Mock extends HttpServlet {
 
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
+        PropertiesReader props = new PropertiesReader();
+        props.getPath();
+
         DataRetriever dataRetriever = new DataRetriever();
 
         String uuid = req.getParameter("uuid");
