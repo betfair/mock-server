@@ -1,0 +1,49 @@
+The Mock Server provides a handy, JSON-based DSL for setting up sessions and expectations. The Mocking Client provides a Groovy-(or Java-)based wrapper 
+around this DSL that removes the need to directly manipulate JSON. The client is split into two components: MockServerClient, for communicating with the 
+Mock Server and RequestBuilder for building up session and expectation requests.
+
+A short example:
+
+def myServer = new MockServerClient("localhost", 9090)
+
+def sessionRequest = RequestBuilder.session()
+                         .when().url().equalTo("/services/users/getUser.do").matches()
+                         .build()
+def session = myServer.createSession(sessionRequest)
+
+def expectationRequest = RequestBuilder.expectation()
+                                    .when().url().beginsWith("/services").matches()
+                                    .then().respond().withBody("test response")
+                                    .statusCode(200).complete().build() 
+myServer.addExpectation(session, expectationRequest)
+
+myServer.deleteSession(session)
+
+How to use it
+
+0. Start an instance of the Mock Server somewhere. 
+1. Add the maven dependency to your project: com.betfair.utils:mocking-client:1.0-SNAPSHOT
+2. Create a MockServerClient object in your test class, pointing at the host and port your mock server is running on. This object is thread-safe.
+3. Use the methods on RequestBuilder to create Session and Expectations as required in your test setup. Hopefully the API provided is sufficiently 
+fluent, that when read with MockExpectationDSL, no further explanation is necessary. There is also Javadoc on all relevant classes.
+4. Submit these using the methods on the MockServerClient object.
+5. When the test is finished, use MockServerClient::deleteSession to clean up.
+XML or JSON serialisation.
+
+Most services to be mocked come with client domain objects annotated for easy serialisation to JSON or XML. This is supported directly by the Mocking Client. 
+Build up your domain object using these client classes, then pass it as the argument to withBody(). Select XML or JSON using asXml() or asJson().
+
+def responseObject = new MyServiceResponseObject()
+responseObject.id = 10
+responseObject.name = "Fred"
+
+def expectationRequest = RequestBuilder.expectation()
+                                    .when().url().beginsWith("/services").matches()
+                                    .then().respond().withBody(responseObject)
+                                    .asJson().contentType("application/json")
+                                    .statusCode(200).complete().build()
+
+What's not implemented (yet):
+
+    Support for any, all, not compositions for request matching and response matching.
+    Weighted response selection
